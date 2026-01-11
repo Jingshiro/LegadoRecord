@@ -1021,7 +1021,7 @@
 
             try {
                 // 简单的 Fetch 请求
-                const res = await fetch(`${aiConfig.baseUrl}/chat/completions`, {
+                const res = await fetch(`${aiConfig.baseUrl}/v1/chat/completions`, {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json', 
