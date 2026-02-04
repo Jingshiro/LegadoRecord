@@ -27,6 +27,9 @@
         --radius-md: 8px;
         --radius-lg: 12px;
         --radius-pill: 50px;
+        
+        --heatmap-size: 10px;
+        --heatmap-gap: 3px;
 
         --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
       }
@@ -44,22 +47,16 @@
         --accent: #8b5f5f;
         --shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
         --title-color: #2c2c2c;
+
+        /* 图表配色 (绿/灰调) */
+        --chart-level-0: #f2f2f0;
+        --chart-level-1: #cce0cd;
+        --chart-level-2: #9bc69e;
+        --chart-level-3: #6ba86f;
+        --chart-level-4: #4e8a52;
       }
 
-      /* 主题：经典绿 (优化标题色) */
-      [data-theme="classic"] {
-        --bg-body: #f2f2ef;
-        --bg-card: #ffffff;
-        --bg-input: #f5f5f5;
-        --primary: #6b8e6b;
-        --primary-fade: #ebf0eb;
-        --text-main: #333333;
-        --text-sub: #888888;
-        --border: #e0e0e0;
-        --accent: #d9534f;
-        --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        --title-color: #4a6e4a;
-      }
+
 
       /* 主题：古籍黄 */
       [data-theme="vintage"] {
@@ -74,6 +71,13 @@
         --accent: #a84936;
         --shadow: 0 8px 30px rgba(62, 48, 39, 0.06);
         --title-color: #3e3027;
+
+        /* 图表配色 (古籍黄 - 棕色系) */
+        --chart-level-0: #e6dfcc;
+        --chart-level-1: #e6d5b8;
+        --chart-level-2: #c2a878;
+        --chart-level-3: #8f7142;
+        --chart-level-4: #5c4033;
       }
 
       /* 主题：静谧黑 */
@@ -87,8 +91,14 @@
         --text-sub: #888888;
         --border: #3a3a3a;
         --accent: #c78d8d;
-        --shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
         --title-color: #e0e0e0;
+
+        /* 图表配色 (静谧黑 - 绿色系) */
+        --chart-level-0: #333333;
+        --chart-level-1: #0e4429;
+        --chart-level-2: #006d32;
+        --chart-level-3: #26a641;
+        --chart-level-4: #39d353;
       }
 
       /* 主题：极简灰 */
@@ -102,8 +112,14 @@
         --text-sub: #90a4ae;
         --border: #cfd8dc;
         --accent: #546e7a;
-        --shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         --title-color: #37474f;
+
+        /* 图表配色 (极简灰 - 蓝灰系) */
+        --chart-level-0: #f0f2f5;
+        --chart-level-1: #cfd8dc;
+        --chart-level-2: #90a4ae;
+        --chart-level-3: #607d8b;
+        --chart-level-4: #455a64;
       }
 
       /* 主题：深海蓝 */
@@ -117,24 +133,17 @@
         --text-sub: #94a3b8;
         --border: #334155;
         --accent: #f472b6;
-        --shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
         --title-color: #38bdf8;
+
+        /* 图表配色 (深海蓝 - 蓝色系) */
+        --chart-level-0: #334155;
+        --chart-level-1: #1e3a8a;
+        --chart-level-2: #3b82f6;
+        --chart-level-3: #2563eb;
+        --chart-level-4: #1d4ed8;
       }
 
-      /* 主题：马卡龙 */
-      [data-theme="macaron"] {
-        --bg-body: #fff0f5;
-        --bg-card: #ffffff;
-        --bg-input: #fff5f7;
-        --primary: #ffb7b2;
-        --primary-fade: #fff0f0;
-        --text-main: #6d5b5b;
-        --text-sub: #b4a0a0;
-        --border: #ffdac1;
-        --accent: #e2f0cb;
-        --shadow: 0 8px 30px rgba(255, 183, 178, 0.2);
-        --title-color: #ff9aa2;
-      }
+
 
       /* --- 3. 全局样式 --- */
       * {
@@ -210,12 +219,10 @@
       }
 
       [data-theme="elegant"] .theme-dot[data-set="elegant"],
-      [data-theme="classic"] .theme-dot[data-set="classic"],
       [data-theme="vintage"] .theme-dot[data-set="vintage"],
       [data-theme="dark"] .theme-dot[data-set="dark"],
       [data-theme="gray"] .theme-dot[data-set="gray"],
-      [data-theme="blue"] .theme-dot[data-set="blue"],
-      [data-theme="macaron"] .theme-dot[data-set="macaron"] {
+      [data-theme="blue"] .theme-dot[data-set="blue"] {
         border-color: var(--text-main);
         transform: scale(1.1);
       }
@@ -225,9 +232,7 @@
         box-shadow: inset 0 0 0 1px #ddd;
       }
 
-      .theme-dot[data-set="classic"] {
-        background: #6b8e6b;
-      }
+
 
       .theme-dot[data-set="vintage"] {
         background: #f0ead6;
@@ -246,9 +251,7 @@
         background: #38bdf8;
       }
 
-      .theme-dot[data-set="macaron"] {
-        background: linear-gradient(135deg, #ff9aa2, #e2f0cb);
-      }
+
 
       .app-title {
         font-family: var(--font-logo);
@@ -499,16 +502,20 @@
         padding: 20px;
         margin-bottom: 30px;
         transition: var(--transition);
-        /* PC端移除横向滚动 */
-        overflow: hidden;
       }
 
       .chart-container:hover {
         border-color: var(--primary);
       }
 
-      /* 移动端适配滚动 */
-      @media (max-width: 600px) {
+      /* PC端和移动端都支持横向滚动 */
+      @media (min-width: 769px) {
+        .chart-container {
+          overflow-x: auto;
+        }
+      }
+      
+      @media (max-width: 768px) {
         .chart-container {
           overflow-x: auto;
         }
@@ -542,7 +549,7 @@
 
       .heatmap-months {
         display: flex;
-        margin-left: 28px;
+        margin-left: 30px; /* 固定对齐 */
         /* 对齐grid */
         margin-bottom: 5px;
         font-size: 10px;
@@ -569,24 +576,26 @@
         color: var(--text-sub);
         padding-top: 2px;
         /* 对齐cell */
-        height: 88px;
-        /* 7行 * (10px + 3px gap) = 88px */
+        /* height: 88px;  removed fixed height here, controlled by calc or media query */
+        width: 30px; /* 固定宽度对齐 */
+        flex-shrink: 0;
       }
 
       .heatmap-grid {
         display: grid;
         grid-auto-flow: column;
-        grid-template-rows: repeat(7, 10px);
+        grid-template-rows: repeat(7, var(--heatmap-size));
         /* grid-template-columns 由 JavaScript 动态设置 */
-        gap: 3px;
+        gap: var(--heatmap-gap);
       }
 
       .heatmap-cell {
-        width: 10px;
-        height: 10px;
+        width: var(--heatmap-size);
+        height: var(--heatmap-size);
         border-radius: 2px;
         background: var(--bg-input);
         transition: all 0.2s;
+        position: relative; /* 为可能需要的定位预留 */
       }
 
       .heatmap-cell:hover {
@@ -594,80 +603,25 @@
         border: 1px solid var(--border);
       }
 
-      /* 颜色等级 (GitHub 风格) */
+      /* 颜色等级 (使用 CSS 变量，无需单独为每个主题写适配) */
       .heatmap-cell[data-level="0"] {
-        background: var(--bg-input);
+        background: var(--chart-level-0);
       }
 
       .heatmap-cell[data-level="1"] {
-        background: #9be9a8;
+        background: var(--chart-level-1);
       }
 
       .heatmap-cell[data-level="2"] {
-        background: #40c463;
+        background: var(--chart-level-2);
       }
 
       .heatmap-cell[data-level="3"] {
-        background: #30a14e;
+        background: var(--chart-level-3);
       }
 
       .heatmap-cell[data-level="4"] {
-        background: #216e39;
-      }
-
-      /* 暗色模式适配 */
-      [data-theme="dark"] .heatmap-cell[data-level="0"] {
-        background: #161b22;
-      }
-
-      [data-theme="dark"] .heatmap-cell[data-level="1"] {
-        background: #0e4429;
-      }
-
-      [data-theme="dark"] .heatmap-cell[data-level="2"] {
-        background: #006d32;
-      }
-
-      [data-theme="dark"] .heatmap-cell[data-level="3"] {
-        background: #26a641;
-      }
-
-      [data-theme="dark"] .heatmap-cell[data-level="4"] {
-        background: #39d353;
-      }
-
-      /* 古籍黄适配 - 使用棕色系 */
-      [data-theme="vintage"] .heatmap-cell[data-level="1"] {
-        background: #e6d5b8;
-      }
-
-      [data-theme="vintage"] .heatmap-cell[data-level="2"] {
-        background: #c2a878;
-      }
-
-      [data-theme="vintage"] .heatmap-cell[data-level="3"] {
-        background: #8f7142;
-      }
-
-      [data-theme="vintage"] .heatmap-cell[data-level="4"] {
-        background: #5c4033;
-      }
-
-      /* 经典绿适配 - 使用原来的主色 */
-      [data-theme="classic"] .heatmap-cell[data-level="1"] {
-        background: #cdeccd;
-      }
-
-      [data-theme="classic"] .heatmap-cell[data-level="2"] {
-        background: #8bc38b;
-      }
-
-      [data-theme="classic"] .heatmap-cell[data-level="3"] {
-        background: #4a8a4a;
-      }
-
-      [data-theme="classic"] .heatmap-cell[data-level="4"] {
-        background: #255225;
+        background: var(--chart-level-4);
       }
 
       .trend-chart {
@@ -681,6 +635,51 @@
         border-bottom: 1px solid var(--border);
         /* 增加横轴线 */
         padding-bottom: 0px;
+      }
+
+      /* PC 端适配：放大热力图以强制滚动 */
+      @media (min-width: 769px) {
+        /* 恢复原容器宽度 */
+        .container {
+          max-width: 700px;
+        }
+
+        :root {
+          --heatmap-size: 11px; /* 放大: 11+3=14 */
+          --heatmap-gap: 3px;
+        }
+
+        .heatmap-weekdays {
+            height: 95px; /* 7*(11+3) - 3 = 95 */
+        }
+
+
+        /* PC 端不需要在 wrapper 层设置滚动 */
+        .heatmap-wrapper {
+             overflow-x: visible;
+        }
+      }
+      
+      /* 自定义滚动条 - 全局应用 */
+      .chart-container::-webkit-scrollbar {
+          height: 6px !important;
+      }
+      .chart-container::-webkit-scrollbar-track {
+          background: transparent !important;
+      }
+      .chart-container::-webkit-scrollbar-button {
+          display: none !important;
+      }
+      .chart-container::-webkit-scrollbar-thumb {
+          background: transparent !important;
+          border-radius: 3px;
+      }
+      .chart-container:hover::-webkit-scrollbar-thumb {
+          background: var(--primary) !important;
+          opacity: 0.6;
+      }
+      .chart-container::-webkit-scrollbar-thumb:hover {
+          opacity: 1;
       }
 
       .trend-bar-group {
@@ -760,6 +759,49 @@
 
       .trend-bar-group:hover .trend-tooltip {
         opacity: 1;
+      }
+
+      /* 独立的 Heatmap Tooltip 样式 (Card 风格) */
+      .heatmap-tooltip {
+        position: fixed;
+        z-index: 9999;
+        background: var(--bg-card); /* 跟随主题背景 */
+        color: var(--text-main);    /* 跟随主题文字 */
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 12px;
+        line-height: 1.5;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.2s;
+        text-align: left;
+        box-shadow: var(--shadow); /* 跟随主题阴影 */
+        border: 1px solid var(--border); /* 增加边框 */
+        transform: translate(-50%, -100%);
+        margin-top: -12px;
+        white-space: normal;      /* 允许换行 */
+        width: 145px !important;  /* 固定宽度 145px */
+        word-wrap: break-word;    /* 长单词换行 */
+        overflow-wrap: break-word;
+      }
+
+      .heatmap-tooltip b {
+        font-size: 12px;
+        display: block;
+        margin-bottom: 4px;
+        color: var(--text-sub); /* 日期颜色淡化 */
+      }
+
+      .heatmap-tooltip span {
+        color: var(--primary); /* 跟随主题主色 */
+        font-weight: bold;
+      }
+      
+      .heatmap-divider {
+        height: 1px;
+        background: var(--border);
+        margin: 6px 0;
+        opacity: 0.5;
       }
 
       /* --- 7. AI 按钮与弹窗 --- */
@@ -1090,12 +1132,10 @@
       <!-- 头部 -->
       <header>
         <div class="theme-switcher">
-          <div class="theme-dot" data-set="classic" title="经典绿"></div>
           <div class="theme-dot" data-set="elegant" title="素雅白"></div>
           <div class="theme-dot" data-set="vintage" title="古籍黄"></div>
           <div class="theme-dot" data-set="gray" title="极简灰"></div>
           <div class="theme-dot" data-set="blue" title="深海蓝"></div>
-          <div class="theme-dot" data-set="macaron" title="马卡龙"></div>
           <div class="theme-dot" data-set="dark" title="静谧黑"></div>
         </div>
         <h1 class="app-title">阅读数据分析</h1>
@@ -1350,7 +1390,8 @@
       const html = document.documentElement;
 
       // 读取本地存储的主题
-      const savedTheme = localStorage.getItem("app_theme") || "classic"; // 默认改为classic
+      // 读取本地存储的主题
+      const savedTheme = localStorage.getItem("app_theme") || "elegant"; // 默认改为 elegant
       html.setAttribute("data-theme", savedTheme);
       themeDots.forEach((dot) => {
         dot.addEventListener("click", () => {
@@ -1861,14 +1902,45 @@
         const monthsEl = document.getElementById("heatmapMonths");
         monthsEl.innerHTML = "";
 
+        // Tooltip 初始化 (单例)
+        let tooltip = document.getElementById("heatmap-tooltip");
+        if (!tooltip) {
+          tooltip = document.createElement("div");
+          tooltip.id = "heatmap-tooltip";
+          tooltip.className = "heatmap-tooltip"; // 使用新样式类
+          document.body.appendChild(tooltip);
+        }
+
         // 1. 聚合数据 (Key: YYYY-MM-DD)
         const dailyData = {};
+        const dailyBooks = {}; // Map<date, Map<bookName, duration>>
+
         sessions.forEach((s) => {
           const date = new Date(s.startTime); // 使用 startTime
           const k = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
           const dur = (s.endTime - s.startTime) / 1000;
-          if (dur > 0) dailyData[k] = (dailyData[k] || 0) + dur;
+          if (dur > 0) {
+              dailyData[k] = (dailyData[k] || 0) + dur;
+              
+              if(!dailyBooks[k]) dailyBooks[k] = {};
+              dailyBooks[k][s.bookName || "无名书籍"] = (dailyBooks[k][s.bookName || "无名书籍"] || 0) + dur;
+          }
         });
+
+        // 辅助：获取某日阅读最久
+        const getTopBook = (dateKey) => {
+            const books = dailyBooks[dateKey];
+            if(!books) return null;
+            let max = 0; 
+            let name = "";
+            for(const b in books) {
+                if(books[b] > max) {
+                    max = books[b];
+                    name = b;
+                }
+            }
+            return name ? { name, time: max } : null;
+        };
 
         const today = new Date();
         const endDate = new Date(today);
@@ -1885,6 +1957,12 @@
         let lastMonth = -1;
         let html = "";
         let iterDate = new Date(startDate);
+        
+        // 动态获取 CSS 变量计算尺寸
+        const computedStyle = getComputedStyle(document.documentElement);
+        const sizeVal = parseFloat(computedStyle.getPropertyValue('--heatmap-size')) || 10;
+        const gapVal = parseFloat(computedStyle.getPropertyValue('--heatmap-gap')) || 3;
+        const unitSize = sizeVal + gapVal; // PC: 9+2=11, Mobile: 10+3=13
 
         for (let w = 0; w < weeks; w++) {
           const weekSunday = new Date(iterDate);
@@ -1894,31 +1972,92 @@
             const mName = weekSunday.toLocaleDateString("en-US", {
               month: "short",
             });
-            const left = w * 13;
-            monthsEl.innerHTML += `<div class="heatmap-month-label" style="left:${left}px">${mName}</div>`;
+            // 动态计算位置
+            const realLeft = w * unitSize;
+            monthsEl.innerHTML += `<div class="heatmap-month-label" style="left:${realLeft}px">${mName}</div>`;
             lastMonth = weekSunday.getMonth();
           }
           for (let d = 0; d < 7; d++) {
             const k = `${iterDate.getFullYear()}-${String(iterDate.getMonth() + 1).padStart(2, "0")}-${String(iterDate.getDate()).padStart(2, "0")}`;
             const sec = dailyData[k] || 0;
+            
             if (iterDate > today) {
-              html += `<div class="heatmap-cell" style="opacity:0"></div>`;
+              html += `<div class="heatmap-cell" style="opacity:0; pointer-events:none"></div>`;
             } else {
               let level = 0;
               if (sec > 0) level = 1;
-              if (sec > 15 * 60) level = 2;
-              if (sec > 60 * 60) level = 3;
-              if (sec > 120 * 60) level = 4;
+              if (sec >= 3600) level = 2;   // 1h
+              if (sec >= 10800) level = 3;  // 3h
+              if (sec >= 18000) level = 4;  // 5h
 
-              const title = `${k} 阅读 ${(sec / 60).toFixed(0)} 分钟`;
-              html += `<div class="heatmap-cell" data-level="${level}" title="${title}"></div>`;
+              // 构建数据属性
+              let dataAttrs = `data-level="${level}" data-date="${k}" data-total="${(sec/60).toFixed(0)}"`;
+              if (level > 0) {
+                  const best = getTopBook(k);
+                  if (best) {
+                      dataAttrs += ` data-book="${best.name.replace(/"/g, '&quot;')}" data-book-time="${(best.time/60).toFixed(0)}"`;
+                  }
+              }
+
+              html += `<div class="heatmap-cell" ${dataAttrs}></div>`;
             }
 
             iterDate.setDate(iterDate.getDate() + 1);
           }
         }
         gridEl.innerHTML = html;
-        gridEl.style.gridTemplateColumns = `repeat(${weeks}, 10px)`;
+        // 使用变量控制列宽
+        gridEl.style.gridTemplateColumns = `repeat(${weeks}, var(--heatmap-size))`;
+
+        // 添加交互
+        const cells = gridEl.querySelectorAll('.heatmap-cell');
+        cells.forEach(cell => {
+            const show = (e) => {
+                const lv = cell.getAttribute('data-level');
+                if(!lv || lv === "0") return;
+
+                const date = cell.getAttribute('data-date');
+                const total = cell.getAttribute('data-total');
+                const book = cell.getAttribute('data-book');
+                const bookTime = cell.getAttribute('data-book-time');
+                
+                let content = `<b>${date}</b>`;
+                content += `总阅读: ${total} min`;
+                
+                if(book) {
+                    content += `<div class="heatmap-divider"></div>
+                      本日最长: <span>${book}</span> (${bookTime}m)`;
+                }
+                
+                tooltip.innerHTML = content;
+                tooltip.style.opacity = '1';
+                
+                const rect = cell.getBoundingClientRect();
+                const left = rect.left + (rect.width / 2);
+                const top = rect.top; // transform handles the -100% and centering
+                
+                tooltip.style.left = left + 'px';
+                tooltip.style.top = top + 'px';
+            };
+            
+            cell.addEventListener('mouseenter', show);
+            cell.addEventListener('click', (e) => {
+                // 阻止冒泡，避免触发 document 点击关闭
+                e.stopPropagation();
+                show(e);
+            }); 
+            cell.addEventListener('mouseleave', () => {
+                // PC 端 hover leave 隐藏；移动端点击后怎么隐藏？
+                // 移动端通常不需要 mouseleave，点击别处隐藏。
+                // 但这里 mouseleave 对 PC 体验好。
+                tooltip.style.opacity = '0';
+            });
+        });
+
+        // 点击空白处隐藏 Tooltip (兼容移动端体验)
+        document.addEventListener('click', () => {
+             tooltip.style.opacity = '0';
+        });
 
         const isMobile = window.innerWidth <= 768;
         if (isMobile) {
@@ -1927,16 +2066,9 @@
             if (wrapper) {
               const maxScroll = wrapper.scrollWidth - wrapper.clientWidth;
               wrapper.scrollLeft = maxScroll;
-              console.log("Heatmap scroll attempt:", {
-                scrollLeft: wrapper.scrollLeft,
-                maxScroll: maxScroll,
-                scrollWidth: wrapper.scrollWidth,
-                clientWidth: wrapper.clientWidth,
-              });
             }
           };
 
-          // 立即尝试一次
           requestAnimationFrame(scrollToEnd);
           setTimeout(scrollToEnd, 100);
           setTimeout(scrollToEnd, 300);
