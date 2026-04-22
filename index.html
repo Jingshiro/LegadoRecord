@@ -27,7 +27,7 @@
         --radius-md: 8px;
         --radius-lg: 12px;
         --radius-pill: 50px;
-        
+
         --heatmap-size: 10px;
         --heatmap-gap: 3px;
 
@@ -55,8 +55,6 @@
         --chart-level-3: #6ba86f;
         --chart-level-4: #4e8a52;
       }
-
-
 
       /* 主题：古籍黄 */
       [data-theme="vintage"] {
@@ -90,7 +88,7 @@
         --text-main: #e0e0e0;
         --text-sub: #888888;
         --border: #3a3a3a;
-        --accent: #c78d8d;
+        --accent: #9dc8a1;
         --title-color: #e0e0e0;
 
         /* 图表配色 (静谧黑 - 绿色系) */
@@ -132,7 +130,7 @@
         --text-main: #f1f5f9;
         --text-sub: #94a3b8;
         --border: #334155;
-        --accent: #f472b6;
+        --accent: #7dd3fc;
         --title-color: #38bdf8;
 
         /* 图表配色 (深海蓝 - 蓝色系) */
@@ -143,9 +141,31 @@
         --chart-level-4: #1d4ed8;
       }
 
-
-
       /* --- 3. 全局样式 --- */
+      /* --- 强化的玻璃拟态核心配置 --- */
+      :root, [data-theme="elegant"], [data-theme="vintage"], [data-theme="gray"] {
+        --glass-bg: rgba(255, 255, 255, 0.55);
+        --glass-border: rgba(255, 255, 255, 0.6);
+        --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+      }
+      
+      [data-theme="dark"], [data-theme="blue"] {
+        --glass-bg: rgba(0, 0, 0, 0.45);
+        --glass-border: rgba(255, 255, 255, 0.12);
+        --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+      }
+
+      .theme-switcher, .upload-box, .stat-card, .chart-container, .list-container, .fab, .modal-card, .heatmap-tooltip {
+        background: var(--glass-bg) !important;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border) !important;
+        /* 使用顶部/左侧高光效果，强化玻璃厚度感 */
+        box-shadow: 
+          var(--glass-shadow), 
+          inset 1px 1px 0px rgba(255, 255, 255, 0.2) !important;
+      }
+
       * {
         margin: 0;
         padding: 0;
@@ -168,6 +188,33 @@
           color 0.5s ease;
         font-weight: normal;
         letter-spacing: 0.02em;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      /* 用虚化光球作为背景，衬托毛玻璃 */
+      body::before, body::after {
+        content: "";
+        position: fixed;
+        width: 350px;
+        height: 350px;
+        border-radius: 50%;
+        z-index: 0;
+        filter: blur(100px);
+        opacity: 0.45;
+        pointer-events: none;
+      }
+
+      body::before {
+        top: -5%;
+        left: -5%;
+        background: var(--primary);
+      }
+
+      body::after {
+        bottom: -5%;
+        right: -5%;
+        background: var(--accent);
       }
 
       .container {
@@ -219,10 +266,12 @@
       }
 
       [data-theme="elegant"] .theme-dot[data-set="elegant"],
+      [data-theme="classic"] .theme-dot[data-set="classic"],
       [data-theme="vintage"] .theme-dot[data-set="vintage"],
       [data-theme="dark"] .theme-dot[data-set="dark"],
       [data-theme="gray"] .theme-dot[data-set="gray"],
-      [data-theme="blue"] .theme-dot[data-set="blue"] {
+      [data-theme="blue"] .theme-dot[data-set="blue"],
+      [data-theme="macaron"] .theme-dot[data-set="macaron"] {
         border-color: var(--text-main);
         transform: scale(1.1);
       }
@@ -232,7 +281,9 @@
         box-shadow: inset 0 0 0 1px #ddd;
       }
 
-
+      .theme-dot[data-set="classic"] {
+        background: #6b8e6b;
+      }
 
       .theme-dot[data-set="vintage"] {
         background: #f0ead6;
@@ -251,7 +302,9 @@
         background: #38bdf8;
       }
 
-
+      .theme-dot[data-set="macaron"] {
+        background: linear-gradient(135deg, #ff9aa2, #e2f0cb);
+      }
 
       .app-title {
         font-family: var(--font-logo);
@@ -401,18 +454,21 @@
 
       .stats-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
         margin-bottom: 30px;
       }
 
       .stat-card {
         background: var(--bg-card);
-        padding: 15px 5px;
+        padding: 25px 10px;
         border-radius: var(--radius-lg);
         text-align: center;
         border: 1px solid var(--border);
         transition: var(--transition);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
       }
 
       .stat-card:hover {
@@ -502,23 +558,12 @@
         padding: 20px;
         margin-bottom: 30px;
         transition: var(--transition);
+        /* 允许横向滚动 */
+        overflow-x: auto;
       }
 
       .chart-container:hover {
         border-color: var(--primary);
-      }
-
-      /* PC端和移动端都支持横向滚动 */
-      @media (min-width: 769px) {
-        .chart-container {
-          overflow-x: auto;
-        }
-      }
-      
-      @media (max-width: 768px) {
-        .chart-container {
-          overflow-x: auto;
-        }
       }
 
       /* 热力图布局 */
@@ -526,35 +571,19 @@
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        width: 100%;
-      }
-
-      /* 移动端启用横向滚动 */
-      @media (max-width: 768px) {
-        .heatmap-wrapper {
-          overflow-x: auto;
-          overflow-y: hidden;
-          /* 隐藏滚动条 */
-          scrollbar-width: none;
-          /* Firefox */
-          -ms-overflow-style: none;
-          /* IE/Edge */
-        }
-
-        .heatmap-wrapper::-webkit-scrollbar {
-          display: none;
-          /* Chrome/Safari */
-        }
+        width: max-content;
+        min-width: 100%;
+        padding-right: 20px; /* 增加右侧留白 */
       }
 
       .heatmap-months {
         display: flex;
-        margin-left: 30px; /* 固定对齐 */
+        margin-left: 28px;
         /* 对齐grid */
         margin-bottom: 5px;
         font-size: 10px;
         color: var(--text-sub);
-        width: 100%;
+        width: calc(100% - 28px);
         position: relative;
         height: 15px;
       }
@@ -576,26 +605,24 @@
         color: var(--text-sub);
         padding-top: 2px;
         /* 对齐cell */
-        /* height: 88px;  removed fixed height here, controlled by calc or media query */
-        width: 30px; /* 固定宽度对齐 */
-        flex-shrink: 0;
+        height: 88px;
+        /* 7行 * (10px + 3px gap) = 88px */
       }
 
       .heatmap-grid {
         display: grid;
         grid-auto-flow: column;
-        grid-template-rows: repeat(7, var(--heatmap-size));
+        grid-template-rows: repeat(7, 10px);
         /* grid-template-columns 由 JavaScript 动态设置 */
-        gap: var(--heatmap-gap);
+        gap: 3px;
       }
 
       .heatmap-cell {
-        width: var(--heatmap-size);
-        height: var(--heatmap-size);
+        width: 10px;
+        height: 10px;
         border-radius: 2px;
         background: var(--bg-input);
         transition: all 0.2s;
-        position: relative; /* 为可能需要的定位预留 */
       }
 
       .heatmap-cell:hover {
@@ -624,19 +651,6 @@
         background: var(--chart-level-4);
       }
 
-      .trend-chart {
-        display: flex;
-        align-items: flex-end;
-        height: 180px;
-        width: 100%;
-        gap: 2px;
-        padding-top: 30px;
-        /* 增加顶部空间给 tooltip */
-        border-bottom: 1px solid var(--border);
-        /* 增加横轴线 */
-        padding-bottom: 0px;
-      }
-
       /* PC 端适配：放大热力图以强制滚动 */
       @media (min-width: 769px) {
         /* 恢复原容器宽度 */
@@ -650,36 +664,91 @@
         }
 
         .heatmap-weekdays {
-            height: 95px; /* 7*(11+3) - 3 = 95 */
+          height: 95px; /* 7*(11+3) - 3 = 95 */
         }
-
 
         /* PC 端不需要在 wrapper 层设置滚动 */
         .heatmap-wrapper {
-             overflow-x: visible;
+          overflow-x: visible;
         }
       }
-      
+
       /* 自定义滚动条 - 全局应用 */
       .chart-container::-webkit-scrollbar {
-          height: 6px !important;
+        height: 6px !important;
       }
       .chart-container::-webkit-scrollbar-track {
-          background: transparent !important;
+        background: transparent !important;
       }
       .chart-container::-webkit-scrollbar-button {
-          display: none !important;
+        display: none !important;
       }
       .chart-container::-webkit-scrollbar-thumb {
-          background: transparent !important;
-          border-radius: 3px;
+        background: transparent !important;
+        border-radius: 3px;
       }
       .chart-container:hover::-webkit-scrollbar-thumb {
-          background: var(--primary) !important;
-          opacity: 0.6;
+        background: var(--primary) !important;
+        opacity: 0.6;
       }
       .chart-container::-webkit-scrollbar-thumb:hover {
-          opacity: 1;
+        opacity: 1;
+      }
+
+      /* 独立的 Heatmap Tooltip 样式 (Card 风格) */
+      .heatmap-tooltip {
+        position: fixed;
+        z-index: 9999;
+        background: var(--bg-card); /* 跟随主题背景 */
+        color: var(--text-main); /* 跟随主题文字 */
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 12px;
+        line-height: 1.5;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.2s;
+        text-align: left;
+        box-shadow: var(--shadow); /* 跟随主题阴影 */
+        border: 1px solid var(--border); /* 增加边框 */
+        transform: translate(-50%, -100%);
+        margin-top: -12px;
+        white-space: normal; /* 允许换行 */
+        width: 145px !important; /* 固定宽度 145px */
+        word-wrap: break-word; /* 长单词换行 */
+        overflow-wrap: break-word;
+      }
+
+      .heatmap-tooltip b {
+        font-size: 12px;
+        display: block;
+        margin-bottom: 4px;
+        color: var(--text-sub); /* 日期颜色淡化 */
+      }
+
+      .heatmap-tooltip span {
+        color: var(--primary); /* 跟随主题主色 */
+        font-weight: bold;
+      }
+
+      .heatmap-divider {
+        height: 1px;
+        background: var(--border);
+        margin: 6px 0;
+        opacity: 0.5;
+      }
+
+      .trend-chart {
+        display: flex;
+        align-items: flex-end;
+        height: 180px;
+        width: 100%;
+        gap: 2px;
+        padding-top: 30px;
+        /* 增加顶部空间给 tooltip */
+        border-bottom: 1px solid var(--border);
+        /* 增加横轴线 */
+        padding-bottom: 0px;
       }
 
       .trend-bar-group {
@@ -759,49 +828,6 @@
 
       .trend-bar-group:hover .trend-tooltip {
         opacity: 1;
-      }
-
-      /* 独立的 Heatmap Tooltip 样式 (Card 风格) */
-      .heatmap-tooltip {
-        position: fixed;
-        z-index: 9999;
-        background: var(--bg-card); /* 跟随主题背景 */
-        color: var(--text-main);    /* 跟随主题文字 */
-        padding: 10px 14px;
-        border-radius: 8px;
-        font-size: 12px;
-        line-height: 1.5;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.2s;
-        text-align: left;
-        box-shadow: var(--shadow); /* 跟随主题阴影 */
-        border: 1px solid var(--border); /* 增加边框 */
-        transform: translate(-50%, -100%);
-        margin-top: -12px;
-        white-space: normal;      /* 允许换行 */
-        width: 145px !important;  /* 固定宽度 145px */
-        word-wrap: break-word;    /* 长单词换行 */
-        overflow-wrap: break-word;
-      }
-
-      .heatmap-tooltip b {
-        font-size: 12px;
-        display: block;
-        margin-bottom: 4px;
-        color: var(--text-sub); /* 日期颜色淡化 */
-      }
-
-      .heatmap-tooltip span {
-        color: var(--primary); /* 跟随主题主色 */
-        font-weight: bold;
-      }
-      
-      .heatmap-divider {
-        height: 1px;
-        background: var(--border);
-        margin: 6px 0;
-        opacity: 0.5;
       }
 
       /* --- 7. AI 按钮与弹窗 --- */
@@ -936,7 +962,7 @@
         scrollbar-width: none; /* Firefox */
         -ms-overflow-style: none; /* IE 10+ */
       }
-      
+
       .modal-body::-webkit-scrollbar {
         display: none; /* Chrome/Safari */
       }
@@ -1201,27 +1227,6 @@
           </button>
         </div>
 
-        <!-- 可视化图表 -->
-        <div class="section-title">阅读活跃度 (最近一年)</div>
-        <div class="chart-container">
-          <div class="heatmap-wrapper">
-            <div class="heatmap-months" id="heatmapMonths"></div>
-            <div class="heatmap-body">
-              <div class="heatmap-weekdays">
-                <div>Mon</div>
-                <div>Wed</div>
-                <div>Fri</div>
-              </div>
-              <div class="heatmap-grid" id="heatmapChart"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="section-title">阅读趋势统计</div>
-        <div class="chart-container">
-          <div class="trend-chart" id="trendChart"></div>
-        </div>
-
         <!-- 数据概览 -->
         <div class="section-title">数据概览</div>
         <div class="stats-grid">
@@ -1237,12 +1242,62 @@
             <div class="stat-value" id="avgTime">0</div>
             <div class="stat-label">平均时长 (分)</div>
           </div>
+          <div class="stat-card">
+            <div class="stat-value" id="noteCount">—</div>
+            <div class="stat-label">想法记录 (条)</div>
+          </div>
+        </div>
+
+        <!-- 本日阅读时长统计 -->
+        <div class="section-title">本日阅读时长统计</div>
+        <div class="chart-container" style="display: flex; flex-direction: column; align-items: center; overflow: hidden;">
+          <div class="target-setting" style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+            <label style="font-size: 13px; color: var(--text-sub);">每日目标 (分钟):</label>
+            <input type="number" id="dailyTargetInput" class="form-input" style="width: 80px; padding: 4px 8px;" min="1" value="60">
+            <button class="btn btn-primary" id="saveTargetBtn" style="padding: 4px 12px; font-size: 12px;">保存</button>
+          </div>
+          <div id="todayChartContainer" style="position: relative; width: 200px; height: 200px;">
+            <svg viewBox="0 0 100 100" style="transform: rotate(135deg); width: 100%; height: 100%;">
+              <!-- 基础环 -->
+              <circle cx="50" cy="50" r="40" fill="none" stroke="var(--bg-input)" stroke-width="8" stroke-dasharray="188.5 251.3" stroke-dashoffset="0" stroke-linecap="round"></circle>
+              <!-- 进度环 -->
+              <circle id="todayProgressCircle" cx="50" cy="50" r="40" fill="none" stroke="var(--primary)" stroke-width="8" stroke-dasharray="188.5 251.3" stroke-dashoffset="188.5" stroke-linecap="round" style="transition: stroke-dashoffset 1s ease-out;"></circle>
+              <!-- 溢出进度环 -->
+              <circle id="todayOverflowCircle" cx="50" cy="50" r="40" fill="none" stroke="var(--accent)" stroke-width="8" stroke-dasharray="188.5 251.3" stroke-dashoffset="188.5" stroke-linecap="round" style="transition: stroke-dashoffset 1s ease-out; opacity: 0;"></circle>
+            </svg>
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+              <div id="todayTimeText" style="font-size: 28px; font-weight: bold; color: var(--text-main); font-variant-numeric: tabular-nums;">00:00</div>
+              <div style="font-size: 12px; color: var(--text-sub); margin-top: 4px;">今日阅读</div>
+            </div>
+          </div>
         </div>
 
         <!-- 排行榜 -->
         <div class="section-title">时长 Top 10</div>
         <div class="list-container" id="rankList">
           <!-- JS 渲染内容 -->
+        </div>
+
+        <!-- 想法统计 -->
+        <div class="section-title" id="thoughtSectionTitle" style="display:none;">想法统计 Top 5</div>
+        <div class="list-container" id="thoughtList" style="display:none;">
+          <!-- JS 渲染内容 -->
+        </div>
+
+        <!-- 可视化图表 (阅读活跃度) -->
+        <div class="section-title">阅读活跃度 (当前年份)</div>
+        <div class="chart-container">
+          <div class="heatmap-wrapper">
+            <div class="heatmap-months" id="heatmapMonths"></div>
+            <div class="heatmap-body">
+              <div class="heatmap-weekdays">
+                <div>Mon</div>
+                <div>Wed</div>
+                <div>Fri</div>
+              </div>
+              <div class="heatmap-grid" id="heatmapChart"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1277,15 +1332,8 @@
       <div class="modal-card">
         <div class="modal-header">
           <div class="modal-title">AI 读书锐评</div>
-          <div class="close-btn" id="closeModal">
-            <svg
-              style="width: 24px; height: 24px; fill: currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 17.59 13.41 12z"
-              ></path>
-            </svg>
+          <div class="close-btn" id="closeModal" style="font-size: 20px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-family: sans-serif;">
+            ✕
           </div>
         </div>
 
@@ -1296,19 +1344,6 @@
 
         <div class="modal-body">
           <div id="tab-generate">
-            <div
-              style="
-                margin-bottom: 15px;
-                background: var(--bg-input);
-                padding: 10px;
-                border-radius: var(--radius-md);
-                border: 1px solid var(--border);
-              "
-            >
-              <div style="font-size: 14px; color: var(--text-sub); margin-bottom: 5px;">
-                本版本仅支持自定义 API，请在“API 配置”中填写。
-              </div>
-            </div>
             <div style="margin-bottom: 15px">
               <label class="form-label">风格预设</label>
               <div class="style-tags" id="styleTagsContainer"></div>
@@ -1329,7 +1364,7 @@
                 type="text"
                 class="form-input"
                 id="apiBaseUrl"
-                placeholder="例如 https://api.openai.com/"
+                placeholder="例如 https://api.openai.com"
               />
             </div>
             <div style="margin-bottom: 15px">
@@ -1397,8 +1432,7 @@
       const html = document.documentElement;
 
       // 读取本地存储的主题
-      // 读取本地存储的主题
-      const savedTheme = localStorage.getItem("app_theme") || "elegant"; // 默认改为 elegant
+      const savedTheme = localStorage.getItem("app_theme") || "elegant"; // 默认改为elegant
       html.setAttribute("data-theme", savedTheme);
       themeDots.forEach((dot) => {
         dot.addEventListener("click", () => {
@@ -1410,8 +1444,10 @@
 
       // --- 全局变量与 DOM ---
       let allData = [];
-      let allSessions = []; // 新增：保存流水数据
+      let allSessions = []; // 保存流水数据
+      let allNotes = [];   // 保存笔记/想法数据
       let currentFilteredData = [];
+      let currentFilteredNotes = []; // 当前时间段筛选后的笔记
       let currentFilterName = "全部时间";
 
       // 预设 AI 风格
@@ -1465,17 +1501,20 @@
           totalTime: document.getElementById("totalTime"),
           bookCount: document.getElementById("bookCount"),
           avgTime: document.getElementById("avgTime"),
+          noteCount: document.getElementById("noteCount"),
         },
         rankList: document.getElementById("rankList"),
-        stats: {
-          totalTime: document.getElementById("totalTime"),
-          bookCount: document.getElementById("bookCount"),
-          avgTime: document.getElementById("avgTime"),
-        },
-        rankList: document.getElementById("rankList"),
+        thoughtList: document.getElementById("thoughtList"),
+        thoughtSectionTitle: document.getElementById("thoughtSectionTitle"),
         charts: {
           heatmap: document.getElementById("heatmapChart"),
-          trend: document.getElementById("trendChart"),
+        },
+        todayChart: {
+          targetInput: document.getElementById("dailyTargetInput"),
+          saveBtn: document.getElementById("saveTargetBtn"),
+          progressCircle: document.getElementById("todayProgressCircle"),
+          overflowCircle: document.getElementById("todayOverflowCircle"),
+          timeText: document.getElementById("todayTimeText"),
         },
         aiFab: document.getElementById("aiFab"),
         aiModal: document.getElementById("aiModal"),
@@ -1521,21 +1560,21 @@
 
         try {
           // 处理 API 地址末尾斜杠
-          let url = baseUrl.replace(/\/+$/, '');
+          let url = baseUrl.replace(/\/+$/, "");
           // 智能补全 /v1/models
-          if (!url.endsWith('/models')) {
-              if (url.endsWith('/v1')) {
-                  url += '/models';
-              } else {
-                  url += '/v1/models';
-              }
+          if (!url.endsWith("/models")) {
+            if (url.endsWith("/v1")) {
+              url += "/models";
+            } else {
+              url += "/v1/models";
+            }
           }
 
           // 直接请求 API
           const res = await fetch(url, {
             method: "GET", // 通常 models 是 GET 请求
             headers: {
-              "Authorization": `Bearer ${apiKey}`,
+              Authorization: `Bearer ${apiKey}`,
             },
           });
 
@@ -1609,73 +1648,94 @@
         handleFile(e.target.files[0]),
       );
 
+      function processRawData(rawData) {
+        // 兼容处理多种数据格式:
+        // 1. 新格式: [{bookName: "xxx", sessions: [...], notes: [...]}, ...]
+        // 2. 旧流水格式: [{bookName: "xxx", startTime, endTime}, ...]
+        // 3. 旧备份格式: {books: [{name, readTime, lastRead}, ...]}
+
+        // 检测新格式 (包含 sessions 数组)
+        const isNewFormat =
+          Array.isArray(rawData) &&
+          rawData.length > 0 &&
+          Array.isArray(rawData[0].sessions);
+
+        // 提取 notes（新格式才会有）
+        allNotes = [];
+        if (isNewFormat) {
+          rawData.forEach((book) => {
+            if (book.notes && Array.isArray(book.notes)) {
+              book.notes.forEach((note) => {
+                allNotes.push({
+                  bookName: note.bookName || book.bookName || "无名书籍",
+                  chapterName: note.chapterName || "",
+                  bookText: note.bookText || "",
+                  content: note.content || "",
+                  time: note.time || 0,
+                });
+              });
+            }
+          });
+        }
+
+        if (isNewFormat) {
+          // 新格式: 展开为扁平化的 sessions 数组
+          allSessions = [];
+          rawData.forEach((book) => {
+            if (book.sessions && Array.isArray(book.sessions)) {
+              book.sessions.forEach((session) => {
+                allSessions.push({
+                  bookName: book.bookName || "无名书籍",
+                  startTime: session.startTime,
+                  endTime: session.endTime,
+                });
+              });
+            }
+          });
+          allData = processData(allSessions); // 聚合为书籍维度
+        } else {
+          // 检测旧流水格式 (扁平数组且包含 startTime/endTime)
+          const isOldSessionData =
+            Array.isArray(rawData) &&
+            rawData.length > 0 &&
+            (rawData[0].startTime !== undefined ||
+              rawData[0].endTime !== undefined);
+
+          if (isOldSessionData) {
+            allSessions = rawData; // 保存原始流水
+            allData = processData(allSessions); // 聚合为书籍维度
+          } else {
+            // 旧版备份格式
+            const books = Array.isArray(rawData)
+              ? rawData
+              : rawData.books || [];
+            allSessions = []; // 旧版无流水
+            allData = books
+              .map((item) => {
+                const name = item.name || item.bookName || "无名书籍";
+                let ts = item.latestReadTime || item.lastRead || 0;
+                if (ts > 0 && ts < 10000000000) ts *= 1000;
+                let duration = item.totalReadingTime || item.readTime || 0;
+                duration = Math.floor(duration / 1000);
+                return { bookName: name, lastRead: ts, readTime: duration };
+              })
+              .filter((item) => item.readTime > 60);
+          }
+        }
+
+        els.uploadBox.style.display = "none";
+        els.dashboard.classList.remove("d-none");
+        els.aiFab.classList.remove("hidden");
+        applyFilter("all");
+      }
+
       function handleFile(file) {
         if (!file) return;
         const reader = new FileReader();
         reader.onload = (e) => {
           try {
             const rawData = JSON.parse(e.target.result);
-
-            // 兼容处理多种数据格式:
-            // 1. 新格式: [{bookName: "xxx", sessions: [{startTime, endTime}, ...]}, ...]
-            // 2. 旧流水格式: [{bookName: "xxx", startTime, endTime}, ...]
-            // 3. 旧备份格式: {books: [{name, readTime, lastRead}, ...]}
-
-            // 检测新格式 (包含 sessions 数组)
-            const isNewFormat =
-              Array.isArray(rawData) &&
-              rawData.length > 0 &&
-              Array.isArray(rawData[0].sessions);
-
-            if (isNewFormat) {
-              // 新格式: 展开为扁平化的 sessions 数组
-              allSessions = [];
-              rawData.forEach((book) => {
-                if (book.sessions && Array.isArray(book.sessions)) {
-                  book.sessions.forEach((session) => {
-                    allSessions.push({
-                      bookName: book.bookName || "无名书籍",
-                      startTime: session.startTime,
-                      endTime: session.endTime,
-                    });
-                  });
-                }
-              });
-              allData = processData(allSessions); // 聚合为书籍维度
-            } else {
-              // 检测旧流水格式 (扁平数组且包含 startTime/endTime)
-              const isOldSessionData =
-                Array.isArray(rawData) &&
-                rawData.length > 0 &&
-                (rawData[0].startTime !== undefined ||
-                  rawData[0].endTime !== undefined);
-
-              if (isOldSessionData) {
-                allSessions = rawData; // 保存原始流水
-                allData = processData(allSessions); // 聚合为书籍维度
-              } else {
-                // 旧版备份格式
-                const books = Array.isArray(rawData)
-                  ? rawData
-                  : rawData.books || [];
-                allSessions = []; // 旧版无流水
-                allData = books
-                  .map((item) => {
-                    const name = item.name || item.bookName || "无名书籍";
-                    let ts = item.latestReadTime || item.lastRead || 0;
-                    if (ts > 0 && ts < 10000000000) ts *= 1000;
-                    let duration = item.totalReadingTime || item.readTime || 0;
-                    duration = Math.floor(duration / 1000);
-                    return { bookName: name, lastRead: ts, readTime: duration };
-                  })
-                  .filter((item) => item.readTime > 60);
-              }
-            }
-
-            els.uploadBox.style.display = "none";
-            els.dashboard.classList.remove("d-none");
-            els.aiFab.classList.remove("hidden");
-            applyFilter("all");
+            processRawData(rawData);
           } catch (err) {
             console.error(err);
             alert(
@@ -1686,6 +1746,20 @@
         };
         reader.readAsText(file);
       }
+
+      // --- 供 Legado 自动注入调用的全局函数 ---
+      window.setLegadoRecord = function (jsonDataStr) {
+        if (!jsonDataStr) return;
+        try {
+          const rawData =
+            typeof jsonDataStr === "string"
+              ? JSON.parse(jsonDataStr)
+              : jsonDataStr;
+          processRawData(rawData);
+        } catch (e) {
+          console.error("解析 Legado 自动注入的阅读记录失败", e);
+        }
+      };
 
       // 新增：数据聚合逻辑
       // 新增：核心数据分析 (合并+过滤，AI标准)
@@ -1722,9 +1796,7 @@
           }
 
           // C. 过滤 ( < 60s )
-          const valid = merged.filter(
-            (s) => s.endTime - s.startTime >= 60000,
-          );
+          const valid = merged.filter((s) => s.endTime - s.startTime >= 60000);
           if (valid.length === 0) return;
 
           // D. 统计
@@ -1734,6 +1806,8 @@
           let lastR = 0;
           const starts = [];
           const ends = [];
+          let hasIterationData = false;
+          const brushNumbers = new Set();
 
           valid.forEach((s) => {
             const dur = (s.endTime - s.startTime) / 1000;
@@ -1743,6 +1817,10 @@
             if (s.endTime > lastR) lastR = s.endTime;
             starts.push(new Date(s.startTime));
             ends.push(new Date(s.endTime));
+            if (s.readIteration !== undefined && s.readIteration !== null) {
+              hasIterationData = true;
+              brushNumbers.add(Math.floor(s.readIteration / 2) + 1);
+            }
           });
 
           results.push({
@@ -1755,6 +1833,7 @@
             startTimes: starts,
             endTimes: ends,
             totalDuration: total, // Alias for AI compatibility
+            brushNumbers: hasIterationData ? Array.from(brushNumbers).sort((a, b) => a - b) : null,
           });
         });
 
@@ -1835,10 +1914,16 @@
         currentStartTs = startTs;
         currentEndTs = endTs;
 
-        renderDashboard(currentFilteredData, startTs, endTs);
+        // 按时间段筛选 notes，并存为全局变量供 AI 提示词使用
+        currentFilteredNotes = allNotes.filter((n) => {
+          if (type === "all") return true;
+          return n.time >= startTs && n.time <= endTs;
+        });
+
+        renderDashboard(currentFilteredData, startTs, endTs, currentFilteredNotes);
       }
 
-      function renderDashboard(data, startTs, endTs) {
+      function renderDashboard(data, startTs, endTs, filteredNotes = []) {
         // 统计
         const totalSec = data.reduce((a, b) => a + b.readTime, 0);
         els.stats.totalTime.innerText = (totalSec / 3600).toFixed(1);
@@ -1846,6 +1931,46 @@
         els.stats.avgTime.innerText = data.length
           ? Math.round(totalSec / 60 / data.length)
           : 0;
+
+        // 想法统计
+        if (allNotes.length > 0) {
+          els.stats.noteCount.innerText = filteredNotes.length;
+          // 按书名聚合计数
+          const noteByBook = {};
+          filteredNotes.forEach((n) => {
+            const name = n.bookName || "无名书籍";
+            noteByBook[name] = (noteByBook[name] || 0) + 1;
+          });
+          const top5 = Object.entries(noteByBook)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5);
+          if (top5.length > 0) {
+            els.thoughtSectionTitle.style.display = "";
+            els.thoughtList.style.display = "";
+            const maxCount = top5[0][1];
+            els.thoughtList.innerHTML = top5
+              .map(([name, count], i) => {
+                const percent = (count / maxCount) * 100;
+                return `
+                  <div class="book-item" style="animation: fadeUp 0.4s cubic-bezier(0.2,0.8,0.2,1) forwards; opacity:0; animation-delay:${i * 0.05}s; transform:translateY(15px);">
+                    <div class="book-header">
+                      <span class="book-title">${i + 1}. ${name}</span>
+                      <span class="book-time">${count} 条</span>
+                    </div>
+                    <div class="progress-bg"><div class="progress-bar" style="width:${percent}%"></div></div>
+                  </div>`;
+              })
+              .join("");
+          } else {
+            els.thoughtSectionTitle.style.display = "none";
+            els.thoughtList.style.display = "none";
+          }
+        } else {
+          // 旧数据，无 notes，保持隐藏，并重置数值
+          els.stats.noteCount.innerText = "—";
+          els.thoughtSectionTitle.style.display = "none";
+          els.thoughtList.style.display = "none";
+        }
 
         // 图表渲染 - 这里的逻辑需要修正，趋势图应该跟随时间段
         if (allSessions.length > 0) {
@@ -1868,12 +1993,11 @@
             tStart = now - 30 * 24 * 3600 * 1000; // 默认前30天
           }
 
-          renderTrend(allSessions, tStart, tEnd);
+          renderTodayChart(allSessions);
         } else {
           els.charts.heatmap.innerHTML =
             '<div style="padding:10px;text-align:center;color:var(--text-sub)">无详细阅读记录，无法生成热力图</div>';
-          els.charts.trend.innerHTML =
-            '<div style="padding:10px;text-align:center;color:var(--text-sub)">无详细阅读记录，无法生成趋势图</div>';
+          els.todayChart.timeText.innerText = "00:00";
         }
 
         // 列表
@@ -1927,48 +2051,56 @@
           const k = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
           const dur = (s.endTime - s.startTime) / 1000;
           if (dur > 0) {
-              dailyData[k] = (dailyData[k] || 0) + dur;
-              
-              if(!dailyBooks[k]) dailyBooks[k] = {};
-              dailyBooks[k][s.bookName || "无名书籍"] = (dailyBooks[k][s.bookName || "无名书籍"] || 0) + dur;
+            dailyData[k] = (dailyData[k] || 0) + dur;
+
+            if (!dailyBooks[k]) dailyBooks[k] = {};
+            dailyBooks[k][s.bookName || "无名书籍"] =
+              (dailyBooks[k][s.bookName || "无名书籍"] || 0) + dur;
           }
         });
 
         // 辅助：获取某日阅读最久
         const getTopBook = (dateKey) => {
-            const books = dailyBooks[dateKey];
-            if(!books) return null;
-            let max = 0; 
-            let name = "";
-            for(const b in books) {
-                if(books[b] > max) {
-                    max = books[b];
-                    name = b;
-                }
+          const books = dailyBooks[dateKey];
+          if (!books) return null;
+          let max = 0;
+          let name = "";
+          for (const b in books) {
+            if (books[b] > max) {
+              max = books[b];
+              name = b;
             }
-            return name ? { name, time: max } : null;
+          }
+          return name ? { name, time: max } : null;
         };
 
         const today = new Date();
-        const endDate = new Date(today);
-        const weeks = 53;
+        const year = today.getFullYear();
+        
+        // 当年 12月 31日
+        const endDate = new Date(year, 11, 31);
+        
+        // 当年 1月 1日
+        let startDate = new Date(year, 0, 1);
+        
+        // 退回到 1月 1日所在周的周日
+        const dayOfWeek = startDate.getDay();
+        startDate.setDate(startDate.getDate() - dayOfWeek);
 
-        let current = new Date(endDate);
+        // 计算总周数
+        const totalDays = Math.ceil((endDate - startDate) / 86400000) + 1;
+        const weeks = Math.ceil(totalDays / 7);
 
-        const dayOfWeek = current.getDay(); // 0(Sun) - 6(Sat)
-        // 回到 52 周前的周日
-        const daysToSubtract = (weeks - 1) * 7 + dayOfWeek;
-
-        const startDate = new Date(current);
-        startDate.setDate(startDate.getDate() - daysToSubtract);
         let lastMonth = -1;
         let html = "";
         let iterDate = new Date(startDate);
-        
+
         // 动态获取 CSS 变量计算尺寸
         const computedStyle = getComputedStyle(document.documentElement);
-        const sizeVal = parseFloat(computedStyle.getPropertyValue('--heatmap-size')) || 10;
-        const gapVal = parseFloat(computedStyle.getPropertyValue('--heatmap-gap')) || 3;
+        const sizeVal =
+          parseFloat(computedStyle.getPropertyValue("--heatmap-size")) || 10;
+        const gapVal =
+          parseFloat(computedStyle.getPropertyValue("--heatmap-gap")) || 3;
         const unitSize = sizeVal + gapVal; // PC: 9+2=11, Mobile: 10+3=13
 
         for (let w = 0; w < weeks; w++) {
@@ -1976,34 +2108,41 @@
           const weekSaturday = new Date(iterDate);
           weekSaturday.setDate(weekSunday.getDate() + 6);
           if (weekSunday.getMonth() !== lastMonth) {
-            const mName = weekSunday.toLocaleDateString("en-US", {
-              month: "short",
-            });
-            // 动态计算位置
-            const realLeft = w * unitSize;
-            monthsEl.innerHTML += `<div class="heatmap-month-label" style="left:${realLeft}px">${mName}</div>`;
+            // 如果第一周的周日落在了上一年的12月，则跳过绘制该 "Dec" 标签
+            if (!(w === 0 && weekSunday.getMonth() === 11)) {
+              const mName = weekSunday.toLocaleDateString("en-US", {
+                month: "short",
+              });
+              // 动态计算位置
+              const realLeft = w * unitSize;
+              monthsEl.innerHTML += `<div class="heatmap-month-label" style="left:${realLeft}px">${mName}</div>`;
+            }
             lastMonth = weekSunday.getMonth();
           }
           for (let d = 0; d < 7; d++) {
             const k = `${iterDate.getFullYear()}-${String(iterDate.getMonth() + 1).padStart(2, "0")}-${String(iterDate.getDate()).padStart(2, "0")}`;
             const sec = dailyData[k] || 0;
-            
-            if (iterDate > today) {
+
+            if (iterDate.getFullYear() !== year) {
+              // 补充在网格里但不属于今年的空白天数
               html += `<div class="heatmap-cell" style="opacity:0; pointer-events:none"></div>`;
+            } else if (iterDate > today) {
+              // 今年的未来日期显示为空白格子
+              html += `<div class="heatmap-cell" data-level="0" style="pointer-events:none"></div>`;
             } else {
               let level = 0;
               if (sec > 0) level = 1;
-              if (sec >= 3600) level = 2;   // 1h
-              if (sec >= 10800) level = 3;  // 3h
-              if (sec >= 18000) level = 4;  // 5h
+              if (sec >= 3600) level = 2; // 1h
+              if (sec >= 10800) level = 3; // 3h
+              if (sec >= 18000) level = 4; // 5h
 
               // 构建数据属性
-              let dataAttrs = `data-level="${level}" data-date="${k}" data-total="${(sec/60).toFixed(0)}"`;
+              let dataAttrs = `data-level="${level}" data-date="${k}" data-total="${(sec / 60).toFixed(0)}"`;
               if (level > 0) {
-                  const best = getTopBook(k);
-                  if (best) {
-                      dataAttrs += ` data-book="${best.name.replace(/"/g, '&quot;')}" data-book-time="${(best.time/60).toFixed(0)}"`;
-                  }
+                const best = getTopBook(k);
+                if (best) {
+                  dataAttrs += ` data-book="${best.name.replace(/"/g, "&quot;")}" data-book-time="${(best.time / 60).toFixed(0)}"`;
+                }
               }
 
               html += `<div class="heatmap-cell" ${dataAttrs}></div>`;
@@ -2017,65 +2156,64 @@
         gridEl.style.gridTemplateColumns = `repeat(${weeks}, var(--heatmap-size))`;
 
         // 添加交互
-        const cells = gridEl.querySelectorAll('.heatmap-cell');
-        cells.forEach(cell => {
-            const show = (e) => {
-                const lv = cell.getAttribute('data-level');
-                if(!lv || lv === "0") return;
+        const cells = gridEl.querySelectorAll(".heatmap-cell");
+        cells.forEach((cell) => {
+          const show = (e) => {
+            const lv = cell.getAttribute("data-level");
+            if (!lv || lv === "0") return;
 
-                const date = cell.getAttribute('data-date');
-                const total = cell.getAttribute('data-total');
-                const book = cell.getAttribute('data-book');
-                const bookTime = cell.getAttribute('data-book-time');
-                
-                let content = `<b>${date}</b>`;
-                content += `总阅读: ${total} min`;
-                
-                if(book) {
-                    content += `<div class="heatmap-divider"></div>
+            const date = cell.getAttribute("data-date");
+            const total = cell.getAttribute("data-total");
+            const book = cell.getAttribute("data-book");
+            const bookTime = cell.getAttribute("data-book-time");
+
+            let content = `<b>${date}</b>`;
+            content += `总阅读: ${total} min`;
+
+            if (book) {
+              content += `<div class="heatmap-divider"></div>
                       本日最长: <span>${book}</span> (${bookTime}m)`;
-                }
-                
-                tooltip.innerHTML = content;
-                tooltip.style.opacity = '1';
-                
-                const rect = cell.getBoundingClientRect();
-                const left = rect.left + (rect.width / 2);
-                const top = rect.top; // transform handles the -100% and centering
-                
-                tooltip.style.left = left + 'px';
-                tooltip.style.top = top + 'px';
-            };
-            
-            cell.addEventListener('mouseenter', show);
-            cell.addEventListener('click', (e) => {
-                // 阻止冒泡，避免触发 document 点击关闭
-                e.stopPropagation();
-                show(e);
-            }); 
-            cell.addEventListener('mouseleave', () => {
-                // PC 端 hover leave 隐藏；移动端点击后怎么隐藏？
-                // 移动端通常不需要 mouseleave，点击别处隐藏。
-                // 但这里 mouseleave 对 PC 体验好。
-                tooltip.style.opacity = '0';
-            });
+            }
+
+            tooltip.innerHTML = content;
+            tooltip.style.opacity = "1";
+
+            const rect = cell.getBoundingClientRect();
+            const left = rect.left + rect.width / 2;
+            const top = rect.top; // transform handles the -100% and centering
+
+            tooltip.style.left = left + "px";
+            tooltip.style.top = top + "px";
+          };
+
+          cell.addEventListener("mouseenter", show);
+          cell.addEventListener("click", (e) => {
+            // 阻止冒泡，避免触发 document 点击关闭
+            e.stopPropagation();
+            show(e);
+          });
+          cell.addEventListener("mouseleave", () => {
+            // PC 端 hover leave 隐藏；移动端点击后怎么隐藏？
+            tooltip.style.opacity = "0";
+          });
         });
 
-        // 点击空白处隐藏 Tooltip (兼容移动端体验)
-        document.addEventListener('click', () => {
-             tooltip.style.opacity = '0';
+        // 点击空白处关闭 Tooltip (移动端)
+        document.addEventListener("click", () => {
+          tooltip.style.opacity = "0";
         });
 
         const isMobile = window.innerWidth <= 768;
         if (isMobile) {
           const scrollToEnd = () => {
-            const wrapper = document.querySelector(".heatmap-wrapper");
+            const wrapper = document.querySelector(".chart-container"); // 移动端是 container 滚动
             if (wrapper) {
               const maxScroll = wrapper.scrollWidth - wrapper.clientWidth;
               wrapper.scrollLeft = maxScroll;
             }
           };
 
+          // 立即尝试一次
           requestAnimationFrame(scrollToEnd);
           setTimeout(scrollToEnd, 100);
           setTimeout(scrollToEnd, 300);
@@ -2083,108 +2221,77 @@
         }
       }
 
-      // 新增：渲染趋势图 (带交互)
-      function renderTrend(sessions, startTs, endTs) {
-        const el = els.charts.trend;
-        el.innerHTML = "";
-        const diffDays = Math.ceil((endTs - startTs) / (24 * 3600 * 1000));
-        // 最多显示 100 根柱子，防止太密
-        let mode = "day";
-        if (diffDays > 60) mode = "week";
-        if (diffDays > 365) mode = "month";
+      // 初始化今日目标设定
+      let dailyTargetMinutes = parseInt(localStorage.getItem("daily_reading_target")) || 60;
+      if (els.todayChart && els.todayChart.targetInput) {
+        els.todayChart.targetInput.value = dailyTargetMinutes;
+        els.todayChart.saveBtn.onclick = () => {
+          const val = parseInt(els.todayChart.targetInput.value);
+          if (val > 0) {
+            dailyTargetMinutes = val;
+            localStorage.setItem("daily_reading_target", val);
+            renderTodayChart(allSessions);
+            alert("目标已保存！");
+          }
+        };
+      }
 
-        // 聚合数据
-        const chartData = []; // { label, value, dateObj }
-
-        // 预处理 raw 数据快速查找
-        // 考虑到 session 可能跨天，这里简单处理：start time 归属那天
-        const sessionMap = {};
+      // 新增：渲染本日阅读时长统计
+      function renderTodayChart(sessions) {
+        if (!els.todayChart || !els.todayChart.progressCircle) return;
+        
+        const now = new Date();
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        const endOfToday = startOfToday + 24 * 3600 * 1000 - 1;
+        
+        let todaySeconds = 0;
         sessions.forEach((s) => {
-          const ts = s.startTime;
-          if (ts >= startTs && ts <= endTs) {
-            sessionMap[ts] =
-              (sessionMap[ts] || 0) + (s.endTime - s.startTime) / 1000;
+          // 只统计今天的阅读时长
+          if (s.endTime >= startOfToday && s.startTime <= endOfToday) {
+            const sTime = Math.max(s.startTime, startOfToday);
+            const eTime = Math.min(s.endTime, endOfToday);
+            if (eTime > sTime) {
+              todaySeconds += (eTime - sTime) / 1000;
+            }
           }
         });
-
-        // 必须按时间顺序构建 chartData
-        // 简化：遍历每一天 (或周/月)
-        let curr = new Date(startTs);
-        const end = new Date(endTs);
-
-        while (curr <= end) {
-          let val = 0;
-          let label = "";
-
-          if (mode === "day") {
-            label = `${String(curr.getMonth() + 1).padStart(2, "0")}-${String(curr.getDate()).padStart(2, "0")}`;
-          }
-
-          curr.setDate(curr.getDate() + 1);
+        
+        const todayMinutes = Math.floor(todaySeconds / 60);
+        const displaySeconds = Math.floor(todaySeconds % 60);
+        
+        // 格式化 mm:ss
+        els.todayChart.timeText.innerText = `${String(todayMinutes).padStart(2, '0')}:${String(displaySeconds).padStart(2, '0')}`;
+        
+        // 计算进度
+        const targetSeconds = dailyTargetMinutes * 60;
+        const totalDash = 188.5; // 3/4 circle circumference
+        
+        let progressPct = Math.min(todaySeconds / targetSeconds, 1);
+        let overflowPct = 0;
+        
+        if (todaySeconds > targetSeconds) {
+          // 溢出部分（最多显示一圈即再加100%）
+          overflowPct = Math.min((todaySeconds - targetSeconds) / targetSeconds, 1);
         }
-
-        // 重新重写更高效的逻辑
-        const dailyMap = {};
-        sessions.forEach((s) => {
-          if (s.startTime < startTs || s.startTime > endTs) return;
-          const d = new Date(s.startTime);
-          const k = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-          dailyMap[k] = (dailyMap[k] || 0) + (s.endTime - s.startTime) / 1000;
-        });
-
-        // 生成完整连续日期 Key
-        const keys = [];
-        let ptr = new Date(startTs);
-        const endPtr = new Date(endTs);
-        while (ptr <= endPtr) {
-          const k = `${ptr.getFullYear()}-${String(ptr.getMonth() + 1).padStart(2, "0")}-${String(ptr.getDate()).padStart(2, "0")}`;
-          keys.push(k);
-          ptr.setDate(ptr.getDate() + 1);
+        
+        // Dashoffset: 188.5 is empty, 0 is full
+        const progressOffset = totalDash - (totalDash * progressPct);
+        els.todayChart.progressCircle.style.strokeDashoffset = progressOffset;
+        
+        if (overflowPct > 0) {
+          const overflowOffset = totalDash - (totalDash * overflowPct);
+          els.todayChart.overflowCircle.style.strokeDashoffset = overflowOffset;
+          els.todayChart.overflowCircle.style.opacity = "1";
+        } else {
+          els.todayChart.overflowCircle.style.strokeDashoffset = totalDash;
+          els.todayChart.overflowCircle.style.opacity = "0";
         }
-
-        let maxVal = 0;
-        const finalData = keys.map((k) => {
-          const v = dailyMap[k] || 0;
-          if (v > maxVal) maxVal = v;
-          return { k, v };
-        });
-
-        if (maxVal < 3600) maxVal = 3600; // 至少1小时高度
-
-        // 智能计算 Label 显示间隔
-        const count = finalData.length;
-        let interval = 1;
-        if (count > 20) interval = 2;
-        if (count > 40) interval = 5;
-        if (count > 80) interval = 10;
-        if (count > 200) interval = 30;
-
-        el.innerHTML = finalData
-          .map((item, idx) => {
-            const heightPct = Math.min((item.v / maxVal) * 100, 100);
-            const hour = (item.v / 3600).toFixed(1);
-
-            // 只有符合间隔或者是最后一个才显示日期
-            const showLabel = idx % interval === 0 || idx === count - 1;
-            const labelClass = showLabel ? "trend-date" : "trend-date hide";
-
-            return `
-                <div class="trend-bar-group">
-                    <div class="trend-bar" style="height: ${heightPct}%">
-                        <div class="trend-tooltip">${item.k}<br>阅读: ${hour} h</div>
-                    </div>
-                    <div class="${labelClass}">${item.k.slice(5)}</div>
-                </div>
-                `;
-          })
-          .join("");
       }
 
       // --- AI 弹窗逻辑 ---
       const toggleModal = (show) => {
         if (show) {
           els.aiModal.classList.add("open");
-
         } else {
           els.aiModal.classList.remove("open");
         }
@@ -2259,10 +2366,10 @@
           .slice(0, 15)
           .map((stat) => {
             const name = stat.bookName;
-            
+
             // 兼容旧数据 (无详细流水)
             if (!stat.startTimes) {
-               return `- 书名：${name}\n   时长：${(stat.readTime / 3600).toFixed(1)}h\n   (简略数据)`;
+              return `- 书名：${name}\n   时长：${(stat.readTime / 3600).toFixed(1)}h\n   (简略数据)`;
             }
 
             const count = stat.count;
@@ -2327,16 +2434,41 @@
               (a, b) => b[1] - a[1],
             )[0][0];
 
+            // 获取该书当前时间段内的笔记（最新5条）
+            const bookNotes = currentFilteredNotes
+              .filter((n) => n.bookName === name && (n.bookText || n.content))
+              .sort((a, b) => b.time - a.time)
+              .slice(0, 5);
+
+            const notesStr = bookNotes.length > 0
+              ? `\n   笔记：\n` + bookNotes.map((n, idx) => {
+                  const text = n.bookText ? `「${n.bookText}」` : "";
+                  const thought = n.content ? (text ? ` → ${n.content}` : n.content) : "";
+                  return `     ${idx + 1}. ${text}${thought}`;
+                }).join("\n")
+              : "";
+
+            // 新增阅读次数说明
+            let brushInfoResult = "";
+            if (stat.brushNumbers && stat.brushNumbers.length > 0) {
+                if (stat.brushNumbers.length === 1) {
+                    brushInfoResult = `\n   阅读次数：在指定时间段内为第${stat.brushNumbers[0]}刷`;
+                } else {
+                    brushInfoResult = `\n   阅读次数：在指定时间段内共${stat.brushNumbers.length}次重复阅读（涵盖${stat.brushNumbers.map(n => "第" + n + "刷").join('和')}），当前是第${stat.brushNumbers[stat.brushNumbers.length-1]}刷`;
+                }
+            }
+
             return `
 - 书名：${name}
    时长：${(stat.totalDuration / 3600).toFixed(1)}h
-   周期：${daysSpan}天（其中最长${formatDur(stat.maxDuration)}，最短${formatDur(stat.minDuration)}，共打开${count}次)
-   时段：主要阅读时间段是${topPeriod}，最早${formatTime(minMins)}开始，最晚${formatTime(maxMins)}结束`;
+   周期：${daysSpan}天（其中最长${formatDur(stat.maxDuration)}，最短${formatDur(stat.minDuration)}，共打开${count}次）${brushInfoResult}
+   时段：主要阅读时间段是${topPeriod}，最早${formatTime(minMins)}开始，最晚${formatTime(maxMins)}结束${notesStr}`;
           })
           .join("\n");
 
         try {
           let res;
+
           // 自定义渠道 (Custom)
           let url = aiConfig.baseUrl.trim().replace(/\/+$/, "");
           // 参考 Reader 中的 URL 处理逻辑
@@ -2363,7 +2495,7 @@
             temperature: 0.7,
           };
 
-          // 直接调用 API
+          // 直接调用 API，不再走 /proxy-api/
           res = await fetch(url, {
             method: "POST",
             headers: {
