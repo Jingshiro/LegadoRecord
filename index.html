@@ -2468,7 +2468,6 @@
 
         try {
           let res;
-
           // 自定义渠道 (Custom)
           let url = aiConfig.baseUrl.trim().replace(/\/+$/, "");
           // 参考 Reader 中的 URL 处理逻辑
@@ -2495,7 +2494,7 @@
             temperature: 0.7,
           };
 
-          // 直接调用 API，不再走 /proxy-api/
+          // 直接调用 API
           res = await fetch(url, {
             method: "POST",
             headers: {
